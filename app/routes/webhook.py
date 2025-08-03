@@ -34,11 +34,16 @@ async def whatsapp_webhook(request: Request):
 
     # 4. Get a response from the LLM
     # reply_text = await get_llm_response(context_messages)
+    reply_text = "This is a placeholder response from the LLM."+incoming_msg
 
     # 5. Save the assistant’s reply
     # repo.save_message(user_number, "assistant", reply_text)
 
-    # 6. Send the reply back on WhatsApp
-    # send_whatsapp_reply(to=user_number, body=reply_text)
+    # 6. generate audio url from reply text 
+    # audio_url = await generate_audio(reply_text)
+    audio_url = None
+    
+    # 7. Send the reply back on WhatsApp
+    send_whatsapp_reply(to=user_number, body=reply_text, media_url=audio_url)
 
     return {"status": "ok"}

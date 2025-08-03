@@ -1,14 +1,10 @@
 # app/services/reply.py
-import os
 from twilio.rest import Client
-
-# Load Twilio credentials from environment
-ACCOUNT_SID      = os.getenv("TWILIO_ACCOUNT_SID")
-AUTH_TOKEN       = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")  # e.g. "whatsapp:+14155238886"
+from app.config import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER  
 
 # Initialize the Twilio client
-_twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
+_twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
 
 def send_whatsapp_reply(to: str, body: str, media_url: str = None) -> str:
     """
