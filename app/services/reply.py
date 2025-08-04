@@ -1,5 +1,7 @@
 # app/services/reply.py
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+import logging
 from app.config import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER  
 
 # Initialize the Twilio client
@@ -23,5 +25,12 @@ def send_whatsapp_reply(to: str, body: str, media_url: str = None) -> str:
         # Twilio expects a list for media URLs
         params["media_url"] = [media_url]
 
-    message = _twilio_client.messages.create(**params)
-    return message.sid
+    try:
+        message = _twilio_client.messages.create(**params)
+        return message.sid
+    except TwilioRestException as e:
+        logging.error(f"Twilio error: {e.msg} (code {e.code})")
+        raise RuntimeError(f"Failed to send WhatsApp message: {e.msg}")
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        raise RuntimeError("An unexpected error occurred while sending WhatsApp message.")

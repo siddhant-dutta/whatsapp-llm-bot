@@ -25,7 +25,7 @@ class MongoContextRepository(ContextRepository):
         msg = Message(user_id=user_id, role=role, content=content)
         self.col.insert_one(msg.to_mongo())
 
-    def get_context(self, user_id: str, limit: int = CONTEXT_LIMIT) -> List[Dict[str, str]]:
+    def get_context(self, user_id: str, incoming_msg: str = "", limit: int = CONTEXT_LIMIT) -> List[Dict[str, str]]:
         if not user_id:
             return []
         docs = (

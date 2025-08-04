@@ -33,7 +33,7 @@ LLM_API_KEY     = os.getenv("LLM_API_KEY", "")
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE", "https://api.openai.com")
 OPENAI_MODEL    = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 GROQ_API_BASE   = os.getenv("GROQ_API_BASE",   "https://api.groq.com/openai")
-GROQ_MODEL      = os.getenv("GROQ_MODEL",      "llama3-8b-8192")
+GROQ_MODEL      = os.getenv("GROQ_MODEL",      "llama-3.3-70b-versatile")
 LLM_MAX_TOKENS  = int(os.getenv("LLM_MAX_TOKENS", "250"))
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.7"))
 

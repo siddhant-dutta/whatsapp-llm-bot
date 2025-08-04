@@ -9,6 +9,6 @@ class ContextRepository(ABC):
         ...
 
     @abstractmethod
-    def get_context(self, user_id: str, limit: int) -> List[Dict[str, str]]:
+    def get_context(self, user_id: str, incoming_msg: str, limit: int) -> List[Dict[str, str]]:
         """Fetch the last `limit` messages for a user."""
         ...
