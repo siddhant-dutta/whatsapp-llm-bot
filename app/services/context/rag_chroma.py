@@ -36,8 +36,10 @@ class RAGContextRepository(ContextRepository):
             ids=[str(uuid.uuid4())]
         )
 
-    def get_context(self, user_id: str, incoming_msg:str, limit: int = CONTEXT_LIMIT) -> List[Dict[str, str]]:
-        # Fetch the most relevant messages based on similarity to a dummy query
+        # Prune messages after adding new one
+        self.prune_old_messages(user_id)
+
+    def get_context(self, user_id: str, incoming_msg: str, limit: int = CONTEXT_LIMIT) -> List[Dict[str, str]]:
         results = self.collection.query(
             query_texts=[incoming_msg],
             n_results=limit,
@@ -51,5 +53,28 @@ class RAGContextRepository(ContextRepository):
                 "content": doc
             })
 
-        messages.append({"role": "user", "content": incoming_msg})          
+        # Append the current user message at the end
+        messages.append({"role": "user", "content": incoming_msg})
         return messages
+
+    def prune_old_messages(self, user_id: str):
+        # Retrieve all messages for the user (up to 100 for pruning)
+        results = self.collection.query(
+            query_texts=[""],
+            n_results=100,
+            where={"user_id": user_id}
+        )
+
+        if not results["metadatas"]:
+            return
+
+        # Sort messages by timestamp
+        message_data = list(zip(results["ids"][0], results["metadatas"][0]))
+        sorted_msgs = sorted(message_data, key=lambda x: x[1].get("timestamp", ""))
+
+        # Keep only the latest CONTEXT_LIMIT messages
+        if len(sorted_msgs) > 2*CONTEXT_LIMIT:
+            ids_to_delete = [msg_id for msg_id, _ in sorted_msgs[:-2*CONTEXT_LIMIT]]
+            self.collection.delete(ids=ids_to_delete)
+            
+        print(f"Pruned messages for user {user_id}. Remaining count: {len(sorted_msgs)}")  
