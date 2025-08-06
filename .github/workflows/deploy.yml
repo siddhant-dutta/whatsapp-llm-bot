@@ -1,7 +1,7 @@
-name: Deploy to Google Cloud Run
+name: Deploy to Cloud Run (Manual)
 
 on:
-  workflow_dispatch:  # 👈 Manual trigger only
+  workflow_dispatch:  # Only run when triggered manually from GitHub UI
 
 jobs:
   deploy:
@@ -9,35 +9,52 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
       with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2
-
-    - name: Configure Docker to use the gcloud command-line tool as a credential helper
-      run: gcloud auth configure-docker
+    - name: Authenticate Docker for GCR
+      run: gcloud auth configure-docker --quiet
 
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:latest .
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/bucksbot:latest .
 
-    - name: Push Docker image to GCR
+    - name: Push image to Google Container Registry
       run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:latest
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/bucksbot:latest
 
     - name: Deploy to Cloud Run
       run: |
-        gcloud run deploy fastapi-app \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:latest \
+        gcloud run deploy bucksbot \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/bucksbot:latest \
           --platform managed \
           --region ${{ secrets.GCP_REGION }} \
           --allow-unauthenticated \
-          --set-env-vars="ENV=production" \
-          --port=8000 \
-          --timeout=600 \
-          --memory=1Gi \
+          --memory 512Mi \
+          --port 8000 \
+          --set-env-vars \
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }},\
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }},\
+            TWILIO_PHONE_NUMBER=${{ secrets.TWILIO_PHONE_NUMBER }},\
+            CONTEXT_BACKEND=${{ secrets.CONTEXT_BACKEND }},\
+            MONGO_HOST=${{ secrets.MONGO_HOST }},\
+            MONGO_USER=${{ secrets.MONGO_USER }},\
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }},\
+            MONGO_DB=${{ secrets.MONGO_DB }},\
+            MONGO_COLLECTION=${{ secrets.MONGO_COLLECTION }},\
+            CONTEXT_LIMIT=${{ secrets.CONTEXT_LIMIT }},\
+            LLM_PROVIDER=${{ secrets.LLM_PROVIDER }},\
+            LLM_API_KEY=${{ secrets.LLM_API_KEY }},\
+            OPENAI_API_BASE=${{ secrets.OPENAI_API_BASE }},\
+            OPENAI_MODEL=${{ secrets.OPENAI_MODEL }},\
+            GROQ_API_BASE=${{ secrets.GROQ_API_BASE }},\
+            GROQ_MODEL=${{ secrets.GROQ_MODEL }},\
+            LLM_MAX_TOKENS=${{ secrets.LLM_MAX_TOKENS }},\
+            LLM_TEMPERATURE=${{ secrets.LLM_TEMPERATURE }},\
+            SYSTEM_PROMPT="${{ secrets.SYSTEM_PROMPT }}"
