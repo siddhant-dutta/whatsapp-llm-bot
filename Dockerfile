@@ -22,7 +22,7 @@ COPY .env .env
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 # Optional: makes path explicit
-ENV CHROMA_DB_PATH=/app/chroma_db  
+RUN mkdir -p /app/chroma_db
 
 # Create volume for persistent Chroma DB
 VOLUME ["/app/chroma_db"]
