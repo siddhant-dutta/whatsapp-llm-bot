@@ -11,6 +11,8 @@ BucksBunny is an intelligent, voice-enabled WhatsApp chatbot designed to enhance
 * **Extensible Framework**: The codebase is modular, making it easy to add new functionalities or integrate other services.
 * **Deployment Ready**: Comes with a Dockerfile and a GitHub Actions workflow for easy deployment to Google Cloud Run.
 
+[![Demo Video](https://img.youtube.com/vi/L06bvfpWTT4/maxresdefault.jpg)](https://youtu.be/L06bvfpWTT4)
+
 ## Tech Stack
 
 * **Backend**: FastAPI
