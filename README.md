@@ -10,7 +10,8 @@ BucksBunny is an intelligent, voice-enabled WhatsApp chatbot designed to enhance
 * **Audio Transcription**: Capable of transcribing audio messages into text using OpenAI's Whisper model.
 * **Extensible Framework**: The codebase is modular, making it easy to add new functionalities or integrate other services.
 * **Deployment Ready**: Comes with a Dockerfile and a GitHub Actions workflow for easy deployment to Google Cloud Run.
-
+  
+Demo Video <BR>
 [![Demo Video](https://img.youtube.com/vi/L06bvfpWTT4/hqdefault.jpg)](https://youtu.be/L06bvfpWTT4)
 
 ## Tech Stack
@@ -177,6 +178,7 @@ The `.github/workflows/deploy.yml` file contains a workflow to deploy the applic
 * `GCP_REGION`: The Google Cloud region where you want to deploy the application.
 
 The workflow can be triggered manually from the Actions tab in your GitHub repository.
+
 
 
 
