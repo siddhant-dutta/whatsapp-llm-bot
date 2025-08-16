@@ -20,6 +20,58 @@ BucksBunny is an intelligent, voice-enabled WhatsApp chatbot designed to enhance
 * **Audio Transcription**: OpenAI Whisper
 * **Deployment**: Docker, Google Cloud Run
 
+```mermaid
+graph TD
+    subgraph User
+        A[User on WhatsApp]
+    end
+
+    subgraph Twilio
+        B[Twilio WhatsApp API]
+    end
+
+    subgraph "FastAPI Backend (Your Application)"
+        C{Webhook /webhook}
+        D{Is it Audio?}
+        E["Transcription Service <br> (OpenAI Whisper)"]
+        F["Context Service <br> (Mongo/ChromaDB)"]
+        G["LLM Service <br> (OpenAI/Groq)"]
+        H[Reply Service]
+    end
+
+    subgraph "Data & AI Services"
+        I[MongoDB / ChromaDB]
+        J[OpenAI / Groq API]
+    end
+
+    A -- "Sends Text/Voice Message" --> B
+    B -- "POST Request" --> C
+    C --> D
+    D -- "Yes" --> E
+    E -- "Transcribed Text" --> F
+    D -- "No (only Text)" --> F
+    F -- "User Message + History" --> G
+    I --"Fetches History"--> F
+    F --"Saves Message"--> I
+    G -- "Generates Reply" --> J
+    J -- "Reply Text" --> G
+    G -- "Reply Text" --> H
+    H -- "Sends Reply via API" --> B
+    B -- "Delivers Message" --> A
+
+    style A fill:#25D366,stroke:#333,stroke-width:2px
+    style B fill:#F22F46,stroke:#333,stroke-width:2px
+    style C fill:#009688,stroke:#333,stroke-width:2px
+    style D fill:#00BCD4,stroke:#333,stroke-width:2px
+    style E fill:#FFC107,stroke:#333,stroke-width:2px
+    style F fill:#FF9800,stroke:#333,stroke-width:2px
+    style G fill:#FF5722,stroke:#333,stroke-width:2px
+    style H fill:#E91E63,stroke:#333,stroke-width:2px
+    style I fill:#4CAF50,stroke:#333,stroke-width:2px
+    style J fill:#9C27B0,stroke:#333,stroke-width:2px
+```
+
+
 ## Installation and Setup
 
 ### Prerequisites
@@ -110,3 +162,4 @@ The `.github/workflows/deploy.yml` file contains a workflow to deploy the applic
 * `GCP_REGION`: The Google Cloud region where you want to deploy the application.
 
 The workflow can be triggered manually from the Actions tab in your GitHub repository.
+
